@@ -1,0 +1,27 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: prod
+
+resources:
+  - ../../base
+  - external-secret.yaml
+
+patches:
+  # 2 réplicas en producción
+  - patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 2
+    target:
+      kind: Deployment
+      name: APP_NAME
+
+  # nodeSelector de producción
+  - patch: |-
+      - op: replace
+        path: /spec/template/spec/nodeSelector/environment
+        value: prod
+    target:
+      kind: Deployment
+      name: APP_NAME

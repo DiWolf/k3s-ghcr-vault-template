@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: APP_NAME
+  labels:
+    app: APP_NAME
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: APP_NAME
+  template:
+    metadata:
+      labels:
+        app: APP_NAME
+    spec:
+      # ⚠️ CRÍTICO: El nombre del container aquí debe coincidir EXACTAMENTE
+      #   con lo que usas en 'kubectl set image deployment/APP_NAME CONTAINER_NAME=...'
+      #   en el workflow. Si no coinciden, k8s devuelve un error confuso:
+      #   "spec.template.spec.containers[0].image: Required value"
+      containers:
+        - name: APP_NAME   # ← CONTAINER_NAME — anota este valor, lo necesitas en el workflow
+          image: placeholder:latest   # el pipeline lo reemplaza con la imagen real
+          ports:
+            - containerPort: 3000
+          env:
+            - name: PORT
+              value: "3000"
+          envFrom:
+            - secretRef:
+                name: APP_NAME-secrets   # creado por ExternalSecret
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+
+      # ⚠️ CRÍTICO: imagePullSecrets es obligatorio para imágenes privadas en GHCR.
+      #   Sin esto, el kubelet no intentará usar el secret y fallará con 403.
+      #   El nombre 'ghcr-credentials' debe coincidir con el secret creado en el cluster.
+      imagePullSecrets:
+        - name: ghcr-credentials
+
+      # nodeSelector se sobrescribe por los overlays (qa/prod)
+      nodeSelector:
+        environment: qa

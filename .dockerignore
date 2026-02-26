@@ -1,0 +1,17 @@
+node_modules
+.next
+.git
+.gitignore
+*.md
+.env*
+.DS_Store
+Thumbs.db
+coverage
+.nyc_output
+dist
+build
+*.log
+.vscode
+.idea
+k8s
+.github
