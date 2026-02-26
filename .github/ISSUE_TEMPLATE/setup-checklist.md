@@ -47,9 +47,9 @@ assignees: []
 - [ ] `CONTAINER_NAME` reemplazado (coincide con `deployment.yaml`)
 
 ### Primer deploy
-- [ ] Pipeline `build-and-push` → ✅
-- [ ] Pipeline `deploy-qa` → `Refresh GHCR pull secret` → ✅
-- [ ] Pipeline `deploy-qa` → `Deploy image to QA` → ✅
+- [ ] Pipeline `build-and-push` completado
+- [ ] Pipeline `deploy-qa` → `Refresh GHCR pull secret` completado
+- [ ] Pipeline `deploy-qa` → `Deploy image to QA` completado
 - [ ] Pod en `qa` en estado `1/1 Running`
 - [ ] Imagen tiene formato: `ghcr.io/diwolf/app-name:sha-xxxxxxx` (minúsculas)
 
