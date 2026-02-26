@@ -1,6 +1,6 @@
 # SETUP.md — Guía Paso a Paso
 
-> Sigue cada paso en orden. Cada sección tiene una nota **⚠️ Trampa común** que documenta errores reales que no están en la documentación oficial.
+> Sigue cada paso en orden. Cada sección tiene una nota **NOTA: Trampa común** que documenta errores reales que no están en la documentación oficial.
 
 ---
 
@@ -44,7 +44,7 @@ kubectl label node <NODO_PROD> environment=prod
 
 ### 1.1 Nombre del repo — regla crítica
 
-> **⚠️ Trampa común**: GitHub Container Registry (GHCR) **exige nombres en minúsculas**.
+> **NOTA: Trampa común**: GitHub Container Registry (GHCR) **exige nombres en minúsculas**.
 > Si el nombre del repo tiene mayúsculas (`User/MyApp`), k8s rechazará la imagen con `InvalidImageName`.
 
 La imagen que se publica en GHCR **siempre se referencia en minúsculas**:
@@ -69,7 +69,7 @@ echo "image_name=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')
 | `development` | QA | Nombre exacto — no confundir con `develop` |
 | `main` | PROD | Protegida con aprobación manual |
 
-> **⚠️ Trampa común**: `develop` y `development` **no son la misma rama**.
+> **NOTA: Trampa común**: `develop` y `development` **no son la misma rama**.
 > El workflow escucha `development`. Si tu rama activa se llama `develop`, el pipeline nunca se disparará.
 
 ```bash
@@ -95,7 +95,7 @@ const nextConfig: NextConfig = {
 };
 ```
 
-> **⚠️ Trampa común**: Sin `output: "standalone"`, el build de Docker completará
+> **NOTA: Trampa común**: Sin `output: "standalone"`, el build de Docker completará
 > sin errores pero el contenedor fallará al arrancar con:
 > `Error: Cannot find module '/app/server.js'`
 
@@ -116,7 +116,7 @@ grep -r "APP_NAME\|CONTAINER_NAME" k8s/ --include="*.yaml" -l \
 
 ### 3.2 Verificar el nombre del container — CRÍTICO
 
-> **⚠️ Trampa común — la más difícil de diagnosticar**:
+> **NOTA: Trampa común — la más difícil de diagnosticar**:
 >
 > `kubectl set image deployment/NAME CONTAINER=image` requiere que `CONTAINER`
 > coincida **exactamente** con `spec.template.spec.containers[0].name` en tu YAML.
@@ -188,7 +188,7 @@ gh secret set K8S_USER --body "USUARIO_SSH" \
   --repo OWNER/REPO
 ```
 
-> **⚠️ Trampa común**: No uses el token de `gh` CLI (`gh auth token`) para crear
+> **NOTA: Trampa común**: No uses el token de `gh` CLI (`gh auth token`) para crear
 > el secret de GHCR en k8s. Ese token **no tiene** el scope `packages` por defecto.
 >
 > El workflow ya resuelve esto: el step `Refresh GHCR pull secret` usa
@@ -320,28 +320,28 @@ kubectl describe externalsecret APP_NAME-secrets -n qa
 Abre `.github/workflows/deploy.yml` y verifica:
 
 ```yaml
-# ✅ 1. Nombre del deployment debe existir en k8s
+# 1. Nombre del deployment debe existir en k8s
 kubectl set image deployment/APP_NAME ...
 
-# ✅ 2. CONTAINER_NAME debe coincidir con deployment.yaml
+# 2. CONTAINER_NAME debe coincidir con deployment.yaml
 kubectl set image deployment/APP_NAME CONTAINER_NAME=...
 
-# ✅ 3. Namespace correcto: -n qa / -n prod
+# 3. Namespace correcto: -n qa / -n prod
 
-# ✅ 4. Timeout apropiado (default 120s — aumenta para apps pesadas)
+# 4. Timeout apropiado (default 120s — aumenta para apps pesadas)
 kubectl rollout status ... --timeout=120s
 ```
 
 ### Sobre el escaping de variables en bash
 
-> **⚠️ Trampa común**: Si usas `pct exec` (Proxmox) o cualquier forma de subshell anidado,
+> **NOTA: Trampa común**: Si usas `pct exec` (Proxmox) o cualquier forma de subshell anidado,
 > las variables de bash pueden no expandirse correctamente.
 >
 > ```bash
-> # ❌ MAL — $IMAGE llega literal al kubectl, no se expande
+> # MAL — $IMAGE llega literal al kubectl, no se expande
 > pct exec CT_ID -- bash -c "kubectl set image ... pos=\$IMAGE -n qa"
 >
-> # ✅ BIEN — IMAGE ya está expandida en el shell exterior antes de entrar al subshell
+> # BIEN — IMAGE ya está expandida en el shell exterior antes de entrar al subshell
 > IMAGE="ghcr.io/user/app:sha-abc1234"
 > pct exec CT_ID -- bash -c "kubectl set image ... pos=${IMAGE} -n qa"
 > ```
@@ -365,14 +365,14 @@ gh run watch --repo OWNER/REPO
 
 **Pipeline exitoso:**
 ```
-✅ build-and-push
-  ✅ Set vars (lowercase image name + short SHA)
-  ✅ Log in to GHCR
-  ✅ Build & push
+build-and-push
+  Set vars (lowercase image name + short SHA)
+  Log in to GHCR
+  Build & push
 
-✅ deploy-qa
-  ✅ Refresh GHCR pull secret in QA namespace
-  ✅ Deploy image to QA
+deploy-qa
+  Refresh GHCR pull secret in QA namespace
+  Deploy image to QA
 ```
 
 **Validación final:**
@@ -389,7 +389,7 @@ kubectl get deployment APP_NAME -n qa \
 
 ## Errores conocidos y soluciones
 
-### ❌ `InvalidImageName` — repository name must be lowercase
+### `InvalidImageName` — repository name must be lowercase
 
 ```
 Failed to pull image "ghcr.io/User/My-App:sha-abc":
@@ -404,7 +404,7 @@ con `tr '[:upper:]' '[:lower:]'`. Verifica que usas `steps.vars.outputs.image_na
 
 ---
 
-### ❌ `403 Forbidden` en image pull desde GHCR
+### `403 Forbidden` en image pull desde GHCR
 
 ```
 failed to pull and unpack image "ghcr.io/user/app:sha-abc":
@@ -429,7 +429,7 @@ El token del CLI de GitHub (`gh auth token`) tiene scopes `repo, workflow, read:
 
 ---
 
-### ❌ `spec.containers[0].image: Required value` o `unable to find container "X"`
+### `spec.containers[0].image: Required value` o `unable to find container "X"`
 
 ```
 error: failed to patch image update to pod template:
@@ -449,7 +449,7 @@ Ese valor exacto es el que va en `kubectl set image deployment/NAME <ESTE_VALOR>
 
 ---
 
-### ❌ Pipeline no se dispara en push
+### Pipeline no se dispara en push
 
 **Causa más común**: El trigger del workflow (`on.push.branches`) no coincide con tu rama activa.
 
@@ -463,7 +463,7 @@ cambia el trigger en el workflow o renombra la rama.
 
 ---
 
-### ❌ Variable `$IMAGE` llega literal a `kubectl set image`
+### Variable `$IMAGE` llega literal a `kubectl set image`
 
 ```
 kubectl set image deployment/app container=$IMAGE -n qa

@@ -14,7 +14,7 @@ spec:
       labels:
         app: APP_NAME
     spec:
-      # ⚠️ CRÍTICO: El nombre del container aquí debe coincidir EXACTAMENTE
+      # NOTA: CRÍTICO: El nombre del container aquí debe coincidir EXACTAMENTE
       #   con lo que usas en 'kubectl set image deployment/APP_NAME CONTAINER_NAME=...'
       #   en el workflow. Si no coinciden, k8s devuelve un error confuso:
       #   "spec.template.spec.containers[0].image: Required value"
@@ -49,7 +49,7 @@ spec:
             initialDelaySeconds: 30
             periodSeconds: 10
 
-      # ⚠️ CRÍTICO: imagePullSecrets es obligatorio para imágenes privadas en GHCR.
+      # NOTA: CRÍTICO: imagePullSecrets es obligatorio para imágenes privadas en GHCR.
       #   Sin esto, el kubelet no intentará usar el secret y fallará con 403.
       #   El nombre 'ghcr-credentials' debe coincidir con el secret creado en el cluster.
       imagePullSecrets:

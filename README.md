@@ -32,7 +32,7 @@ Incluye una guía detallada con los errores más comunes que se cometen al confi
 │       └── prod/               # Namespace prod, 2 réplicas, ExternalSecret
 ├── Dockerfile                  # Multi-stage Next.js standalone
 ├── .dockerignore
-└── SETUP.md                    # ⬅️ LEE ESTO PRIMERO
+└── SETUP.md                    # LEE ESTO PRIMERO
 ```
 
 ## Cómo usar
